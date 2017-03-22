@@ -4,11 +4,12 @@
 
 int main()
 {
-	cv::Mat image = cv::imread("image/4.png",-1);
+	cv::Mat image = cv::imread("image/5.jpg",-1);
 	cv::Mat O_img;
-	int dist;
+	int dist = 0;
+	double radian = 0;
 	
-	Line_Detect(image, O_img, &dist);
+	Line_Detect(image, O_img, &dist, &radian);
 	
 	
 	if (!O_img.empty()){
@@ -18,6 +19,7 @@ int main()
 	}
 	
 	printf("거리 %d \n",dist);
+	printf("기울어진 각도 %lf \n",radian);
 	cv::waitKey(0);
 	//system("pause");
 }
