@@ -19,9 +19,12 @@ void Line_Detect(InputArray _src, OutputArray _dst, int* distance, double* radia
 	cvtColor(input_image,gray_img,CV_BGR2GRAY);
 	GaussianBlur(gray_img,blur_img,cv::Size(5,5),10);
 	adaptiveThreshold(blur_img, thresoutput_image, 255, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY_INV, 15, 2);
-	//imshow("image",thresoutput_image);
+	Canny(blur_img, edge_img, 10, 100, 3);
+	imshow("image",thresoutput_image);
+	//imshow("image",edge_img);
 	//line detect
-	HoughLinesP(thresoutput_image, lines, 1, (PI / 45), 10, 200, 0);
+	HoughLinesP(thresoutput_image, lines, 1, (PI / 45), 10, 40, 0);
+	//HoughLinesP(edge_img, lines, 1, (PI / 45), 10, 200, 0);
 	//save line
 	Vec4d params,eparams;
 	int x1, y1, x2, y2;
