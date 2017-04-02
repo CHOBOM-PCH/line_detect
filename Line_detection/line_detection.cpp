@@ -1,12 +1,12 @@
 #include "line_detection.h"
 
-void Line_Detect(InputArray _src, OutputArray _dst, int* distance, double* radian)
+void Line_Detect(InputArray _src, OutputArray _dst, int* distance, double* degree)
 {
 	using namespace cv;
 	Mat input_image = _src.getMat();
 	Mat gray_img;
 	Mat blur_img;
-	Mat thresoutput_image;
+	Mat threshOutput_image;
 	Mat edge_img;
 	vector<Vec4i>lines;
 	int length = 0;
@@ -16,20 +16,20 @@ void Line_Detect(InputArray _src, OutputArray _dst, int* distance, double* radia
 	_dst.getMatRef() = output_image;
 	//imshow("image",input_image);
 	/////pre processing
-	cvtColor(input_image,gray_img,CV_BGR2GRAY);
-	GaussianBlur(gray_img,blur_img,cv::Size(5,5),10);
-	adaptiveThreshold(blur_img, thresoutput_image, 255, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY_INV, 15, 2);
-	Canny(blur_img, edge_img, 10, 100, 3);
-	imshow("image",thresoutput_image);
-	//imshow("image",edge_img);
+	cvtColor(input_image, gray_img, CV_BGR2GRAY);
+	GaussianBlur(gray_img, blur_img, cv::Size(5,5), 10);
+	adaptiveThreshold(blur_img, threshOutput_image, 255, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY_INV, 15, 2);
+	//Canny(blur_img, edge_img, 10, 100, 3);
+	//imshow("image", threshOutput_image);
+	//imshow("image", edge_img);
 	//line detect
-	HoughLinesP(thresoutput_image, lines, 1, (PI / 45), 10, 40, 0);
-	//HoughLinesP(edge_img, lines, 1, (PI / 45), 10, 200, 0);
+	HoughLinesP(threshOutput_image, lines, 1, (PI / 45), 100, 200, 5);
+	//HoughLinesP(edge_img, lines, 1, (PI / 180), 120, 30, 0);
 	//save line
 	Vec4d params,eparams;
 	int x1, y1, x2, y2;
 	int xe1 = 0, ye1 = 0, xe2 = 0, ye2 = 0;
-	int e1=0,e2=0;
+	int e1 = 0, e2 = 0;
 	for (int k = 0; k < lines.size(); k++){
 		params = lines[k];
 		x1 = params[0];
@@ -62,13 +62,13 @@ void Line_Detect(InputArray _src, OutputArray _dst, int* distance, double* radia
 		line(output_image, ct1, ct2, Scalar(0, 255, 255), 2);//Áß½É¼±
 
 		length = (input_image.cols / 2) - (xe1 + xe2) / 2 ;
-		*radian = (atan2f(((float)(ye1 - ye2)), abs((float)(xe2 - xe1))) * 180/PI);
+		*degree = (atan2f(((float)(ye1 - ye2)), abs((float)(xe2 - xe1))) * 180/PI);
 		*distance = length;
 		Point dp1((xe1 + xe2) / 2, 300),dp2(((input_image.cols) / 2), 300);
 		//line(output_image,dp1,dp2, Scalar(255,0,255),1);
 		string te;
 		std::stringstream ste;
-		ste<<"distance:"<<*distance<<"pixel"<<std::endl;
+		ste << "distance:" << *distance << "pixel" << std::endl;
 		te=ste.str();
 		//putText(output_image,te,dp1,3,1.2,Scalar(0,255,0));
 	}

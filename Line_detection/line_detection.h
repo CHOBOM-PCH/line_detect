@@ -22,6 +22,6 @@ using namespace cv;
 
 
 void Line_Detect(InputArray _src, OutputArray _dst,
-	int* distance, double* radian);//distance of center to line
+	int* distance, double* degree);//distance of center to line
 
 #endif
