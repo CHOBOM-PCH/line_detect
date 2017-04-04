@@ -8,19 +8,10 @@ int main()
 	const char* k = "image/7.png";
 	int dist = 0;
 	double degree = 0;
-	//cv::Mat image = cv::imread("image/7.png", -1);
-	//cv::Mat O_img;
-	//Line_Detect(image, O_img, &dist, &degree);
 	Line_Detect(k, &dist, &degree);
 	
-	//if (!O_img.empty()){
-	//
-	//	cv::imshow("Ãâ·Â",O_img);
-
-	//}
-	
-	printf("°Å¸® %d \n", dist);
-	printf("±â¿ï¾îÁø °¢µµ %lf \n", degree);
+	printf("Â°Ã…Â¸Â® %d \n", dist);
+	printf("Â±Ã¢Â¿Ã¯Â¾Ã®ÃÃ¸ Â°Â¢ÂµÂµ %lf \n", degree);
 	cv::waitKey(0);
 	//system("pause");
 }
