@@ -1,11 +1,9 @@
 #include "line_detection.h"
 #include "RANSAC_LineFittingAlgorithm.h"
 
-//void Line_Detect(InputArray _src, OutputArray _dst, int* distance, double* degree)
 void Line_Detect(const char* root, int* distance, double* degree)
 {
 	using namespace cv;
-	//Mat input_img = _src.getMat();
 	Mat read_img = imread (root, -1);
 	Mat input_img = read_img(Rect(10, 10, read_img.cols - 20, read_img.rows - 20));
 	Mat gray_img;
@@ -17,20 +15,17 @@ void Line_Detect(const char* root, int* distance, double* degree)
 		
 	Mat output_img;
 	output_img = input_img.clone();
-	//_dst.getMatRef() = output_img;
-	//imshow("img",input_img);
+	
 	/////pre processing
 	cvtColor(input_img, gray_img, CV_BGR2GRAY);
 	GaussianBlur(gray_img, blur_img, cv::Size(5,5), 10);
 	adaptiveThreshold(blur_img, threshOutput_img, 255, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY_INV, 15, 2);
-	//Canny(blur_img, edge_img, 10, 100, 3);
 	//imshow("img", threshOutput_img);
-	//imshow("img", edge_img);
+
 	//line detect
 	HoughLinesP(threshOutput_img, lines, 1, (PI / 45), 100, 200, 5);
-	//HoughLinesP(edge_img, lines, 1, (PI / 180), 120, 30, 0);
+
 	//save line
-	
 	Vec4d params;//, avgparams;
 	sPoint *data = new sPoint[lines.size() * 2];
 	sLine sline;
@@ -51,7 +46,7 @@ void Line_Detect(const char* root, int* distance, double* degree)
 				
 		Point pt1(x1, y1),pt2(x2, y2);
 		line(output_img, pt1, pt2, Scalar(255, 0, 255), 1);
-		//printf("¼±µéÀÇ ÁÂÇ¥°ª ½ÃÀÛ x:%d y:%d ³¡ x:%d y:%d \n",x1, y1, x2, y2);
+		//printf("ì„ ë“¤ì˜ ì¢Œí‘œê°’ ì‹œì‘ x:%d y:%d ë x:%d y:%d \n",x1, y1, x2, y2);
 	}
 	
 	double cost = ransac_line_fitting (data, lines.size() * 2, sline, 30);
@@ -65,12 +60,12 @@ void Line_Detect(const char* root, int* distance, double* degree)
 		ye2 = sline.sy + 500*sline.my;
 		e1 = xe1, e2 = xe2;
 		Point ept1(xe1, ye1),ept2(xe2, ye2);
-		line(output_img, ept1, ept2, Scalar(255, 255, 0), 2);//Æò±Õ¼±
-		printf("ÁÂÇ¥°ª x:%lf y:%lf \n",sline.sx, sline.sy);
+		line(output_img, ept1, ept2, Scalar(255, 255, 0), 2);//í‰ê· ì„ 
+		printf("ì¢Œí‘œê°’ x:%lf y:%lf \n",sline.sx, sline.sy);
 		circle(output_img, Point(sline.sx, sline.sy), 2, Scalar(0,0,255), 3, 8, 0);
 
 		Point ct1((input_img.cols / 2), 0),ct2((input_img.cols / 2), input_img.rows);
-		line(output_img, ct1, ct2, Scalar(0, 255, 255), 2);//Áß½É¼±
+		line(output_img, ct1, ct2, Scalar(0, 255, 255), 2);//ì¤‘ì‹¬ì„ 
 
 		length = - (input_img.cols / 2) + sline.sx;//(xe1 + xe2) / 2 ;
 		*degree = (atan2f(((float)(ye1 - ye2)), abs((float)(xe2 - xe1))) * 180 / PI);
@@ -83,6 +78,6 @@ void Line_Detect(const char* root, int* distance, double* degree)
 		te=ste.str();
 		//putText(output_img,te,dp1,3,1.2,Scalar(0,255,0));
 	}
-	imshow ("Ãâ·Â",output_img);
+	imshow ("ì¶œë ¥",output_img);
 	return ;
 }
