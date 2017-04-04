@@ -4,7 +4,7 @@
 
 int main()
 {
-	cv::Mat image = cv::imread("image/7.png", -1);
+	cv::Mat image = cv::imread("image/3.png", -1);
 	cv::Mat O_img;
 	int dist = 0;
 	double degree = 0;

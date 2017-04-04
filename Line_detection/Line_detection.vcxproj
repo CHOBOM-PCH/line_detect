@@ -68,9 +68,11 @@
   <ItemGroup>
     <ClCompile Include="line_detection.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="RANSAC_LineFittingAlgorithm.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="line_detection.h" />
+    <ClInclude Include="RANSAC_LineFittingAlgorithm.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

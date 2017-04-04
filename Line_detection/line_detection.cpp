@@ -1,4 +1,5 @@
 #include "line_detection.h"
+#include "RANSAC_LineFittingAlgorithm.h"
 
 void Line_Detect(InputArray _src, OutputArray _dst, int* distance, double* degree)
 {
@@ -26,43 +27,57 @@ void Line_Detect(InputArray _src, OutputArray _dst, int* distance, double* degre
 	HoughLinesP(threshOutput_image, lines, 1, (PI / 45), 100, 200, 5);
 	//HoughLinesP(edge_img, lines, 1, (PI / 180), 120, 30, 0);
 	//save line
-	Vec4d params,eparams;
+	Vec4d params, avgparams, eparams, eeparams;
+	sPoint *data = new sPoint[lines.size() * 2];
+	double diff;
 	int x1, y1, x2, y2;
 	int xe1 = 0, ye1 = 0, xe2 = 0, ye2 = 0;
 	int e1 = 0, e2 = 0;
 	for (int k = 0; k < lines.size(); k++){
+		int i = (k + 1) * 2;
 		params = lines[k];
 		x1 = params[0];
 		y1 = params[1];
 		x2 = params[2];
 		y2 = params[3];
+		data[i - 2].x = params[0];
+		data[i - 2].y = params[1];
+		data[i - 1].x = params[2];
+		data[i - 1].y = params[3];
 
-		eparams[0] = eparams[0] + params[0];
-		eparams[1] = eparams[1] + params[1];
-		eparams[2] = eparams[2] + params[2];
-		eparams[3] = eparams[3] + params[3];
-		xe1 = (eparams[0]) / (k + 1);
-		ye1 = (eparams[1]) / (k + 1);
-		xe2 = (eparams[2]) / (k + 1);
-		ye2 = (eparams[3]) / (k + 1);
-		Point pt1(x1, y1),pt2(x2, y2);
-		line(output_image, pt1, pt2, Scalar(255, 0, 255), 1);
-		printf("선들의 좌표값 시작 x:%d y:%d 끝 x:%d y:%d \n",x1, y1, x2, y2);
+		//avgparams[0] = avgparams[0] + params[0];
+		//avgparams[1] = avgparams[1] + params[1];
+		//avgparams[2] = avgparams[2] + params[2];
+		//avgparams[3] = avgparams[3] + params[3];
+		//xe1 = (avgparams[0]) / (k + 1);
+		//ye1 = (avgparams[1]) / (k + 1);
+		//xe2 = (avgparams[2]) / (k + 1);
+		//ye2 = (avgparams[3]) / (k + 1);
+		//Point pt1(x1, y1),pt2(x2, y2);
+		//line(output_image, pt1, pt2, Scalar(255, 0, 255), 1);
+		//printf("선들의 좌표값 시작 x:%d y:%d 끝 x:%d y:%d \n",x1, y1, x2, y2);
 	}
-	//print line and distance
-	if (xe1 == 0){
-		xe1 = e1, xe2 = e2;
-	}
+	sLine sline;
+	double cost = ransac_line_fitting (data, lines.size() * 2, sline, 30);
+		//print line and distance
+	//if (xe1 == 0){
+	//	xe1 = e1, xe2 = e2;
+	//}
+	if (sline.mx == 0);
 	else {
+		xe1 = sline.sx - 500*sline.mx;
+		ye1 = sline.sy - 500*sline.my;
+		xe2 = sline.sx + 500*sline.mx;
+		ye2 = sline.sy + 500*sline.my;
 		e1 = xe1, e2 = xe2;
-		Point ept1(xe1,ye1),ept2(xe2,ye2);
+		Point ept1(xe1, ye1),ept2(xe2, ye2);
 		line(output_image, ept1, ept2, Scalar(255, 255, 0), 2);//평균선
 
 		Point ct1((input_image.cols / 2), 0),ct2((input_image.cols / 2), input_image.rows);
 		line(output_image, ct1, ct2, Scalar(0, 255, 255), 2);//중심선
 
 		length = (input_image.cols / 2) - (xe1 + xe2) / 2 ;
-		*degree = (atan2f(((float)(ye1 - ye2)), abs((float)(xe2 - xe1))) * 180/PI);
+		*degree = (atan2f(((float)(ye1 - ye2)), abs((float)(xe2 - xe1))) * 180 / PI);
 		*distance = length;
 		Point dp1((xe1 + xe2) / 2, 300),dp2(((input_image.cols) / 2), 300);
 		//line(output_image,dp1,dp2, Scalar(255,0,255),1);
