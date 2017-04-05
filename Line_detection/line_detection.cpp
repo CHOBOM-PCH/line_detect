@@ -2,10 +2,10 @@
 #include "RANSAC_LineFittingAlgorithm.h"
 
 
-void Line_Detect(const char* root, int* distance, double* degree)
+void Line_Detect(const char* route, int* distance, double* degree)
 {
 	using namespace cv;
-	Mat read_img = imread (root, -1);
+	Mat read_img = imread (route, -1);
 	Mat input_img = read_img(Rect(10, 10, read_img.cols - 20, read_img.rows - 20));
 	Mat gray_img;
 	Mat blur_img;
