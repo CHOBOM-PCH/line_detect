@@ -2,10 +2,10 @@
 #include "RANSAC_LineFittingAlgorithm.h"
 
 
-void Line_Detect(const char* route, int* distance, double* degree)
+int Line_Detect(const char* route, int* distance, double* degree)
 {
 	using namespace cv;
-	Mat read_img = imread (route, -1);
+	Mat read_img = imread (route);
 	Mat input_img = read_img(Rect(10, 10, read_img.cols - 20, read_img.rows - 20));
 	Mat gray_img;
 	Mat blur_img;
@@ -27,6 +27,7 @@ void Line_Detect(const char* route, int* distance, double* degree)
 	Vec4d params;//, avgparams;
 	sPoint *data = new sPoint[lines.size() * 2];
 	sLine sline;
+
 	int x1, y1, x2, y2;
 	int xe1 = 0, ye1 = 0, xe2 = 0, ye2 = 0;
 	int e1 = 0, e2 = 0;
@@ -44,13 +45,12 @@ void Line_Detect(const char* route, int* distance, double* degree)
 				
 		Point pt1(x1, y1),pt2(x2, y2);
 		line(output_img, pt1, pt2, Scalar(255, 0, 255), 1);
-		//printf("선들의 좌표값 시작 x:%d y:%d 끝 x:%d y:%d \n",x1, y1, x2, y2);
 	}
 	
 	double cost = ransac_line_fitting (data, lines.size() * 2, sline, 30);
 
-	if (sline.mx == 0){
-		xe1 = e1 , xe2 = e2;
+	if (sline.sx < 2){
+		return -1;
 	}else {
 		xe1 = sline.sx - 500*sline.mx;
 		ye1 = sline.sy - 500*sline.my;
@@ -59,7 +59,6 @@ void Line_Detect(const char* route, int* distance, double* degree)
 		e1 = xe1, e2 = xe2;
 		Point ept1(xe1, ye1),ept2(xe2, ye2);
 		line(output_img, ept1, ept2, Scalar(255, 255, 0), 2);//평균선
-		printf("좌표값 x:%lf y:%lf \n",sline.sx, sline.sy);
 		circle(output_img, Point(sline.sx, sline.sy), 2, Scalar(0,0,255), 3, 8, 0);
 
 		Point ct1((input_img.cols / 2), 0),ct2((input_img.cols / 2), input_img.rows);
@@ -75,7 +74,9 @@ void Line_Detect(const char* route, int* distance, double* degree)
 		ste << "distance:" << *distance << "pixel" << std::endl;
 		te=ste.str();
 		//putText(output_img,te,dp1,3,1.2,Scalar(0,255,0));
+		//imshow ("출력",output_img);
+		delete data;
+		return 1;
 	}
-	imshow ("출력",output_img);
-	return ;
+	
 }

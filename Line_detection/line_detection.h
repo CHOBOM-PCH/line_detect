@@ -23,6 +23,6 @@ using namespace cv;
 
 //void Line_Detect(InputArray _src, OutputArray _dst,
 //	int* distance, double* degree);//distance of center to line
-void Line_Detect(const char* route, int* distance, double* degree);
+int Line_Detect(const char* route, int* distance, double* degree);
 
 #endif
