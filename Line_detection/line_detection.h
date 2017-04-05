@@ -20,6 +20,6 @@
 #define PI 3.1415926
 using namespace cv;
 
-void Line_Detect(const char* root, int* distance, double* degree);
+void Line_Detect(const char* route, int* distance, double* degree);
 
 #endif
