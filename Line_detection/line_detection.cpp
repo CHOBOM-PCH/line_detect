@@ -6,6 +6,9 @@ int Line_Detect(const char* route, int* distance, double* degree)
 {
 	using namespace cv;
 	Mat read_img = imread (route);
+	if(read_img.empty())
+		return -1;
+
 	Mat input_img = read_img(Rect(10, 10, read_img.cols - 20, read_img.rows - 20));
 	Mat gray_img;
 	Mat blur_img;
@@ -13,7 +16,7 @@ int Line_Detect(const char* route, int* distance, double* degree)
 	Mat edge_img;
 	vector<Vec4i>lines;
 	int length = 0;
-		
+	
 	Mat output_img;
 	output_img = input_img.clone();
 	cvtColor(input_img, gray_img, CV_BGR2GRAY);
@@ -50,12 +53,13 @@ int Line_Detect(const char* route, int* distance, double* degree)
 	double cost = ransac_line_fitting (data, lines.size() * 2, sline, 30);
 
 	if (sline.sx < 2){
+		delete data;
 		return -1;
 	}else {
-		xe1 = sline.sx - 500*sline.mx;
-		ye1 = sline.sy - 500*sline.my;
-		xe2 = sline.sx + 500*sline.mx;
-		ye2 = sline.sy + 500*sline.my;
+		xe1 = sline.sx - 500 * sline.mx;
+		ye1 = sline.sy - 500 * sline.my;
+		xe2 = sline.sx + 500 * sline.mx;
+		ye2 = sline.sy + 500 * sline.my;
 		e1 = xe1, e2 = xe2;
 		Point ept1(xe1, ye1),ept2(xe2, ye2);
 		line(output_img, ept1, ept2, Scalar(255, 255, 0), 2);//Æò±Õ¼±
@@ -67,13 +71,13 @@ int Line_Detect(const char* route, int* distance, double* degree)
 		length = - (input_img.cols / 2) + sline.sx;//(xe1 + xe2) / 2 ;
 		*degree = (atan2f(((float)(ye1 - ye2)), abs((float)(xe2 - xe1))) * 180 / PI);
 		*distance = length;
-		Point dp1((xe1 + xe2) / 2, 300),dp2(((input_img.cols) / 2), 300);
-		//line(output_img,dp1,dp2, Scalar(255,0,255),1);
+		Point dp1((xe1 + xe2) / 2, 300), dp2(((input_img.cols) / 2), 300);
+		//line(output_img, dp1, dp2,  Scalar(255,0,255), 1);
 		string te;
 		std::stringstream ste;
 		ste << "distance:" << *distance << "pixel" << std::endl;
 		te=ste.str();
-		//putText(output_img,te,dp1,3,1.2,Scalar(0,255,0));
+		//putText(output_img, te, dp1, 3, 1.2, Scalar(0,255,0));
 		//imshow ("Ãâ·Â",output_img);
 		delete data;
 		return 1;
