@@ -87,7 +87,7 @@ int Line_Detect(const char* route, int* distance, double* degree)
 		ste << "distance:" << *distance << "pixel" << std::endl;
 		te=ste.str();
 		putText(output_img, te, Point(sline.sx, sline.sy), 3, 1.2, Scalar(0,255,0));
-		//imshow ("출력",output_img);
+		imshow ("출력",output_img);
 		delete data;
 		return 1;
 	}
