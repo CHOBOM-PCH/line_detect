@@ -2,7 +2,7 @@
 #include "RANSAC_LineFittingAlgorithm.h"
 
 
-int Line_Detect(const char* route, int* distance, double* degree)
+int Line_Detect(const char* route, int* distance, int* roi, double* degree)
 {
 	using namespace cv;
 	Mat read_img = imread (route);
@@ -43,8 +43,11 @@ int Line_Detect(const char* route, int* distance, double* degree)
 		x2 = params[2];
 		y2 = params[3];
 		angle = abs(atan2f(((float)(y1 - y2)), abs((float)(x2 - x1))) * 180 / PI);
-		if(angle > 80 && angle < 100){
+		int l = abs(input_img.rows / 2 - (y1+y2) / 2);
+		if(angle > 80 && angle < 100 ){
 			j ++;
+		}else if(l > *roi) {
+			j++;
 		}else{
 			int i = (k + 1 - j) * 2;
 			data[i - 2].x = params[0];
@@ -81,6 +84,7 @@ int Line_Detect(const char* route, int* distance, double* degree)
 		length = (input_img.rows / 2) - sline.sy;
 		*degree = (atan2f(((float)(ye1 - ye2)), abs((float)(xe2 - xe1))) * 180 / PI);
 		*distance = length;
+		//printf("시작점 %lf, %lf  각도 %lf, %lf theta(rad)(%lf, %lf)  \n", sline.sx, sline.sy, sline.mx, sline.my, acosf(sline.mx), asinf(sline.my));
 		
 		string te;
 		std::stringstream ste;
